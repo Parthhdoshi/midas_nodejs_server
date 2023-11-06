@@ -15,9 +15,9 @@ export const register = async (req, res) => {
             let userExists = await User.findOne({ email }).exec();
             console.log("User Exists",userExists?.password)
 
-        if(Hello) {
-            await User.findOneAndDelete({_id: "6544e99ebcd360c7217cd153"}).exec()
-        }
+        // if(Hello) {
+        //     await User.findOneAndDelete({_id: "6544e99ebcd360c7217cd153"}).exec()
+        // }
  
         // if (userExists) 
         //     return res.status(400).send({ Error: "Profile is Exists" });
