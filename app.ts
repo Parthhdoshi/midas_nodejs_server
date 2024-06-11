@@ -21,7 +21,7 @@ app.use(cookieParser());
 // cors => cross origin resource sharing
 app.use(
   cors({
-    origin: ["*"],
+    origin: ["http://localhost:3000","https://midas-nextjs-server.vercel.app"],
     credentials: true,
   })
 );
