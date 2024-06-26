@@ -11,6 +11,8 @@ import notificationRouter from "./routes/notification.route";
 import analyticsRouter from "./routes/analytics.route";
 import layoutRouter from "./routes/layout.route";
 import { rateLimit } from 'express-rate-limit'
+import CouponCodeModel from "./models/coupon.models";
+import { couponRouter } from "./routes/coupon.router";
 
 // body parser
 app.use(express.json({ limit: "50mb" }));
@@ -42,13 +44,14 @@ app.use(
   courseRouter,
   notificationRouter,
   analyticsRouter,
-  layoutRouter
+  layoutRouter,
+  couponRouter
 );
 
 // testing api
-app.get("/test", (req: Request, res: Response, next: NextFunction) => {
+app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
-    succcess: true,
+    success: true,
     message: "API is working",
   });
 });
@@ -59,6 +62,8 @@ app.all("*", (req: Request, res: Response, next: NextFunction) => {
   err.statusCode = 404;
   next(err);
 });
+
+
 
 // middleware calls
 app.use(limiter);
