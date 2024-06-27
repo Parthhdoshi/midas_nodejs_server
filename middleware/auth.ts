@@ -30,7 +30,8 @@ export const isAutheticated = CatchAsyncError(
         return next(error);
       }
     } else {
-      const user = await redis.get(decoded.id);
+      const user = "" 
+      // await redis.get(decoded.id);
 
       if (!user) {
         return next(

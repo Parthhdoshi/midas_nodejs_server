@@ -91,7 +91,8 @@ export const getSingleCourse = CatchAsyncError(
     try {
       const courseId = req.params.id;
 
-      const isCacheExist = await redis.get(courseId);
+      const isCacheExist = "" 
+      // await redis.get(courseId);
 
       if (isCacheExist) {
         const course = JSON.parse(isCacheExist);
@@ -104,7 +105,7 @@ export const getSingleCourse = CatchAsyncError(
           "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
         );
 
-        await redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
+        // await redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
 
         res.status(200).json({
           success: true,
@@ -358,7 +359,7 @@ export const addReview = CatchAsyncError(
 
       await course?.save();
 
-      await redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
+      // await redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
 
       // create notification
       await NotificationModel.create({
@@ -418,7 +419,7 @@ export const addReplyToReview = CatchAsyncError(
       
       await course?.save();
 
-      await redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
+      // await redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
 
       res.status(200).json({
         success: true,
@@ -455,7 +456,7 @@ export const deleteCourse = CatchAsyncError(
 
       await course.deleteOne({ id });
 
-      await redis.del(id);
+      // await redis.del(id);
 
       res.status(200).json({
         success: true,
