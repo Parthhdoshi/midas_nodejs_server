@@ -19,6 +19,20 @@ export const getAllCoupons = CatchAsyncError(
     }
   );
 
+export const checkCoupon = CatchAsyncError(
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const getAllCouponData = await CouponCodeModel.find().sort({ createdAt: -1 }).select('couponCode status');
+        res.status(200).json({
+          success: true,
+          getAllCouponData
+        });
+      } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+      }
+    }
+  );
+
 export const createCoupon = CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -36,7 +50,9 @@ export const createCoupon = CatchAsyncError(
         // return res.status(400).json({ success: false, message: 'Course does not exist' });
         // }
 
-
+        await CouponCodeModel.create({
+          couponCode, status, count, userId, courseId,
+        })
         res.status(201).json({
             couponCode, status, count, userId, courseId,
             success: true,

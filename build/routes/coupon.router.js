@@ -9,5 +9,6 @@ const coupon_controller_1 = require("../controllers/coupon.controller");
 const auth_1 = require("../middleware/auth");
 exports.couponRouter = express_1.default.Router();
 exports.couponRouter.get("/get-all-coupon", auth_1.isAutheticated, coupon_controller_1.getAllCoupons);
+// couponRouter.get("/check-coupon", isAutheticated, checkCoupon)
 exports.couponRouter.post("/create-coupon", auth_1.isAutheticated, coupon_controller_1.createCoupon);
 // couponRouter.post("/create-coupon",  isAutheticated, createCoupon)

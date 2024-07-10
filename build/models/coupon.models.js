@@ -43,11 +43,11 @@ const couponSchema = new mongoose_1.Schema({
         type: mongoose_1.Schema.Types.ObjectId,
         ref: 'User',
     },
-    courseId: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'Course',
-        required: true,
-    },
+    courseId: [{
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'Course',
+            required: true,
+        }],
     discount: {
         type: Number,
         required: true,

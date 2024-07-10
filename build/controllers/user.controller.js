@@ -13,7 +13,6 @@ const ejs_1 = __importDefault(require("ejs"));
 const path_1 = __importDefault(require("path"));
 const sendMail_1 = __importDefault(require("../utils/sendMail"));
 const jwt_1 = require("../utils/jwt");
-const redis_1 = require("../utils/redis");
 const user_service_1 = require("../services/user.service");
 const cloudinary_1 = __importDefault(require("cloudinary"));
 exports.registrationUser = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, next) => {
@@ -104,7 +103,6 @@ exports.loginUser = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, nex
         if (!isPasswordMatch) {
             return next(new ErrorHandler_1.default("Invalid email or password", 400));
         }
-        console.log('dhhdh', user);
         (0, jwt_1.sendToken)(user, 200, res);
     }
     catch (error) {
@@ -117,7 +115,7 @@ exports.logoutUser = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, ne
         res.cookie("access_token", "", { maxAge: 1 });
         res.cookie("refresh_token", "", { maxAge: 1 });
         const userId = req.user?._id || "";
-        redis_1.redis.del(userId);
+        // redis.del(userId);
         res.status(200).json({
             success: true,
             message: "Logged out successfully",
@@ -136,7 +134,8 @@ exports.updateAccessToken = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, 
         if (!decoded) {
             return next(new ErrorHandler_1.default(message, 400));
         }
-        const session = await redis_1.redis.get(decoded.id);
+        const session = "";
+        // await redis.get(decoded.id as string);
         if (!session) {
             return next(new ErrorHandler_1.default("Please login for access this resources!", 400));
         }
@@ -150,7 +149,7 @@ exports.updateAccessToken = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, 
         req.user = user;
         res.cookie("access_token", accessToken, jwt_1.accessTokenOptions);
         res.cookie("refresh_token", refreshToken, jwt_1.refreshTokenOptions);
-        await redis_1.redis.set(user._id, JSON.stringify(user), "EX", 604800); // 7days
+        // await redis.set(user._id, JSON.stringify(user), "EX", 604800); // 7days
         return next();
     }
     catch (error) {
@@ -161,6 +160,7 @@ exports.updateAccessToken = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, 
 exports.getUserInfo = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, next) => {
     try {
         const userId = req.user?._id;
+        console.log(userId);
         (0, user_service_1.getUserById)(userId, res);
     }
     catch (error) {
@@ -193,7 +193,7 @@ exports.updateUserInfo = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res
             user.name = name;
         }
         await user?.save();
-        await redis_1.redis.set(userId, JSON.stringify(user));
+        // await redis.set(userId, JSON.stringify(user));
         res.status(201).json({
             success: true,
             user,
@@ -219,7 +219,7 @@ exports.updatePassword = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res
         }
         user.password = newPassword;
         await user.save();
-        await redis_1.redis.set(req.user?._id, JSON.stringify(user));
+        // await redis.set(req.user?._id, JSON.stringify(user));
         res.status(201).json({
             success: true,
             user,
@@ -261,7 +261,7 @@ exports.updateProfilePicture = (0, catchAsyncErrors_1.CatchAsyncError)(async (re
             }
         }
         await user?.save();
-        await redis_1.redis.set(userId, JSON.stringify(user));
+        // await redis.set(userId, JSON.stringify(user));
         res.status(200).json({
             success: true,
             user,
@@ -309,7 +309,7 @@ exports.deleteUser = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, ne
             return next(new ErrorHandler_1.default("User not found", 404));
         }
         await user.deleteOne({ id });
-        await redis_1.redis.del(id);
+        // await redis.del(id);
         res.status(200).json({
             success: true,
             message: "User deleted successfully",

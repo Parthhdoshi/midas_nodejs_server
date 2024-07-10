@@ -10,7 +10,7 @@ const order_Model_1 = __importDefault(require("../models/order.Model"));
 exports.newOrder = (0, catchAsyncErrors_1.CatchAsyncError)(async (data, res) => {
     const order = await order_Model_1.default.create(data);
     res.status(201).json({
-        succcess: true,
+        success: true,
         order,
     });
 });

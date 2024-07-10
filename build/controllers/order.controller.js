@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.newPayment = exports.sendStripePublishableKey = exports.getAllOrders = exports.createOrder = void 0;
+exports.newPayment = exports.sendStripePublishableKey = exports.getAllOrders = exports.createOrderByCoupon = exports.createOrder = void 0;
 const catchAsyncErrors_1 = require("../middleware/catchAsyncErrors");
 const ErrorHandler_1 = __importDefault(require("../utils/ErrorHandler"));
 const user_model_1 = __importDefault(require("../models/user.model"));
@@ -13,7 +13,7 @@ const ejs_1 = __importDefault(require("ejs"));
 const sendMail_1 = __importDefault(require("../utils/sendMail"));
 const notification_Model_1 = __importDefault(require("../models/notification.Model"));
 const order_service_1 = require("../services/order.service");
-const redis_1 = require("../utils/redis");
+const coupon_models_1 = __importDefault(require("../models/coupon.models"));
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 // create order
@@ -70,7 +70,7 @@ exports.createOrder = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, n
             return next(new ErrorHandler_1.default(error.message, 500));
         }
         user?.courses.push(course?._id);
-        await redis_1.redis.set(req.user?._id, JSON.stringify(user));
+        // await redis.set(req.user?._id, JSON.stringify(user));
         await user?.save();
         await notification_Model_1.default.create({
             user: user?._id,
@@ -80,6 +80,48 @@ exports.createOrder = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, n
         course.purchased = course.purchased + 1;
         await course.save();
         (0, order_service_1.newOrder)(data, res, next);
+    }
+    catch (error) {
+        return next(new ErrorHandler_1.default(error.message, 500));
+    }
+});
+// create order by coupon code 
+exports.createOrderByCoupon = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, next) => {
+    try {
+        const { courseId } = req.body;
+        const { couponCode } = req.body;
+        const user = await user_model_1.default.findById(req.user?._id);
+        // const courseExistInUser = user?.courses.some(
+        //   (course: any) => course._id.toString() === courseId
+        // );
+        // if (courseExistInUser) {
+        //   return next(
+        //     new ErrorHandler("You have already purchased this course", 400)
+        //   );
+        // }
+        const course = await course_model_1.default.findById(courseId);
+        if (!course) {
+            return next(new ErrorHandler_1.default("Course not found", 404));
+        }
+        const coupon = await coupon_models_1.default.find({ couponCode: couponCode });
+        if (!coupon.length) {
+            return next(new ErrorHandler_1.default("coupon not found", 404));
+        }
+        if (!coupon.includes(courseId)) {
+            res.status(201).json({
+                success: true,
+                // courseId,
+                // course,
+                // user,
+                coupon
+            });
+        }
+        else {
+            return next(new ErrorHandler_1.default("This coupon is not for this course", 404));
+        }
+        // user?.courses.push(course?._id);
+        // await redis.set(req.user?._id, JSON.stringify(user));
+        // await user?.save();
     }
     catch (error) {
         return next(new ErrorHandler_1.default(error.message, 500));
@@ -105,9 +147,9 @@ exports.newPayment = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, ne
     try {
         const myPayment = await stripe.paymentIntents.create({
             amount: req.body.amount,
-            currency: "USD",
+            currency: "INR",
             metadata: {
-                company: "E-Learning",
+                company: "Midas",
             },
             automatic_payment_methods: {
                 enabled: true,

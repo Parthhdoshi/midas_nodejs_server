@@ -4,11 +4,13 @@ import ErrorHandler from "../utils/ErrorHandler";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { redis } from "../utils/redis";
 import { updateAccessToken } from "../controllers/user.controller";
+import userModel from "../models/user.model";
 
 // authenticated user
 export const isAutheticated = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     const access_token = req.cookies.access_token as string;
+    console.log(access_token)
 
     if (!access_token) {
       return next(
@@ -30,7 +32,8 @@ export const isAutheticated = CatchAsyncError(
         return next(error);
       }
     } else {
-      const user = "" 
+      console.log("",decoded.id)
+      const user = await userModel.findOne({ _id : decoded.id }) 
       // await redis.get(decoded.id);
 
       if (!user) {
@@ -39,7 +42,7 @@ export const isAutheticated = CatchAsyncError(
         );
       }
 
-      req.user = JSON.parse(user);
+      req.user = user;
 
       next();
     }

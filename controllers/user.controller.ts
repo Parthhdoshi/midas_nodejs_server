@@ -169,7 +169,6 @@ export const loginUser = CatchAsyncError(
       if (!isPasswordMatch) {
         return next(new ErrorHandler("Invalid email or password", 400));
       }
-   console.log('dhhdh',user)
       sendToken(user, 200, res);
     } catch (error: any) {
 
@@ -255,7 +254,9 @@ export const updateAccessToken = CatchAsyncError(
 export const getUserInfo = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      
       const userId = req.user?._id;
+      console.log(userId)
       getUserById(userId, res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));

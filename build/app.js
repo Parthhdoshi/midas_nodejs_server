@@ -24,7 +24,7 @@ exports.app.use(express_1.default.json({ limit: "50mb" }));
 exports.app.use((0, cookie_parser_1.default)());
 // cors => cross origin resource sharing
 exports.app.use((0, cors_1.default)({
-    origin: ["http://localhost:3000", "https://midas-nextjs-server.vercel.app"],
+    origin: ["http://localhost:3000"],
     credentials: true,
 }));
 // api requests limit
@@ -40,7 +40,13 @@ exports.app.use("/api/v1", user_route_1.default, order_route_1.default, course_r
 exports.app.get("/test", async (req, res, next) => {
     res.status(200).json({
         success: true,
-        message: "API is working",
+        message: "GET API is working",
+    });
+});
+exports.app.post("/test", async (req, res, next) => {
+    res.status(200).json({
+        success: true,
+        message: "POST API is working",
     });
 });
 // unknown route

@@ -10,6 +10,7 @@ import sendMail from "../utils/sendMail";
 import NotificationModel from "../models/notification.Model";
 import { getAllOrdersService, newOrder } from "../services/order.service";
 import { redis } from "../utils/redis";
+import CouponCodeModel, { ICouponSchema } from "../models/coupon.models";
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
@@ -110,6 +111,63 @@ export const createOrder = CatchAsyncError(
   }
 );
 
+// create order by coupon code 
+export const createOrderByCoupon = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { courseId } = req.body as IOrder;
+      const { couponCode } = req.body as ICouponSchema;
+
+      const user = await userModel.findById(req.user?._id);
+
+      // const courseExistInUser = user?.courses.some(
+      //   (course: any) => course._id.toString() === courseId
+      // );
+
+      // if (courseExistInUser) {
+      //   return next(
+      //     new ErrorHandler("You have already purchased this course", 400)
+      //   );
+      // }
+
+      const course:ICourse | null = await CourseModel.findById(courseId)
+
+      if (!course) {
+        return next(new ErrorHandler("Course not found", 404));
+      }
+
+      const coupon:any = await CouponCodeModel.find({couponCode: couponCode})
+
+      if (!coupon.length) {
+        return next(new ErrorHandler("coupon not found", 404));
+      }
+      
+      if(!coupon.includes(courseId)){
+        
+        res.status(201).json({
+          success:true,
+          // courseId,
+          // course,
+          // user,
+          coupon
+      })
+
+      }else{
+        return next(new ErrorHandler("This coupon is not for this course", 404));
+      }
+      
+      // user?.courses.push(course?._id);
+
+      // await redis.set(req.user?._id, JSON.stringify(user));
+
+      // await user?.save();
+
+    } catch(error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+)
+
 // get All orders --- only for admin
 export const getAllOrders = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -136,9 +194,9 @@ export const newPayment = CatchAsyncError(
     try {
       const myPayment = await stripe.paymentIntents.create({
         amount: req.body.amount,
-        currency: "USD",
+        currency: "INR",
         metadata: {
-          company: "E-Learning",
+          company: "Midas",
         },
         automatic_payment_methods: {
           enabled: true,

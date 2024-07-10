@@ -9,7 +9,6 @@ const ErrorHandler_1 = __importDefault(require("../utils/ErrorHandler"));
 const cloudinary_1 = __importDefault(require("cloudinary"));
 const course_service_1 = require("../services/course.service");
 const course_model_1 = __importDefault(require("../models/course.model"));
-const redis_1 = require("../utils/redis");
 const mongoose_1 = __importDefault(require("mongoose"));
 const path_1 = __importDefault(require("path"));
 const ejs_1 = __importDefault(require("ejs"));
@@ -75,7 +74,8 @@ exports.editCourse = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, ne
 exports.getSingleCourse = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, next) => {
     try {
         const courseId = req.params.id;
-        const isCacheExist = await redis_1.redis.get(courseId);
+        const isCacheExist = "";
+        // await redis.get(courseId);
         if (isCacheExist) {
             const course = JSON.parse(isCacheExist);
             res.status(200).json({
@@ -85,7 +85,7 @@ exports.getSingleCourse = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, re
         }
         else {
             const course = await course_model_1.default.findById(req.params.id).select("-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links");
-            await redis_1.redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
+            // await redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
             res.status(200).json({
                 success: true,
                 course,
@@ -249,7 +249,7 @@ exports.addReview = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, nex
             course.ratings = avg / course.reviews.length; // one example we have 2 reviews one is 5 another one is 4 so math working like this = 9 / 2  = 4.5 ratings
         }
         await course?.save();
-        await redis_1.redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
+        // await redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
         // create notification
         await notification_Model_1.default.create({
             user: req.user?._id,
@@ -287,7 +287,7 @@ exports.addReplyToReview = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, r
         }
         review.commentReplies?.push(replyData);
         await course?.save();
-        await redis_1.redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
+        // await redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
         res.status(200).json({
             success: true,
             course,
@@ -315,7 +315,7 @@ exports.deleteCourse = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, 
             return next(new ErrorHandler_1.default("course not found", 404));
         }
         await course.deleteOne({ id });
-        await redis_1.redis.del(id);
+        // await redis.del(id);
         res.status(200).json({
             success: true,
             message: "course deleted successfully",

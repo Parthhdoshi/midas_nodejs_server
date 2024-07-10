@@ -4,7 +4,8 @@ import userModel from "../models/user.model";
 
 // get user by id
 export const getUserById = async (id: string, res: Response) => {
-  const userJson = "" 
+  const userJson:any = JSON.stringify(await userModel.findOne({ _id : id }))
+  console.log(userJson)
   // await redis.get(id);
 
   if (userJson) {

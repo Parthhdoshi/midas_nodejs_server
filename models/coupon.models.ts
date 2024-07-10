@@ -28,11 +28,11 @@ const couponSchema = new Schema<ICouponSchema>({
         type: Schema.Types.ObjectId,
         ref: 'User',
       },
-      courseId: {
+      courseId: [{
         type: Schema.Types.ObjectId,
         ref: 'Course',
         required: true,
-      },
+      }],
       discount:{
         type: Number,
         required: true,

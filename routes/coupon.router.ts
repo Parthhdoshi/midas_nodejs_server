@@ -5,5 +5,6 @@ import { isAutheticated } from '../middleware/auth';
 export const couponRouter = express.Router();
 
 couponRouter.get("/get-all-coupon", isAutheticated, getAllCoupons)
+// couponRouter.get("/check-coupon", isAutheticated, checkCoupon)
 couponRouter.post("/create-coupon",  isAutheticated, createCoupon)
 // couponRouter.post("/create-coupon",  isAutheticated, createCoupon)
