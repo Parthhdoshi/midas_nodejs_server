@@ -1,5 +1,5 @@
 import express from "express";
-import { authorizeRoles, isAutheticated } from "../middleware/auth";
+import { authorizeRoles, isAuthenticated } from "../middleware/auth";
 import {
   createLayout,
   editLayout,
@@ -9,14 +9,14 @@ const layoutRouter = express.Router();
 
 layoutRouter.post(
   "/create-layout",
-  isAutheticated,
+  isAuthenticated,
   authorizeRoles("admin"),
   createLayout
 );
 
 layoutRouter.put(
   "/edit-layout",
-  isAutheticated,
+  isAuthenticated,
   authorizeRoles("admin"),
   editLayout
 );

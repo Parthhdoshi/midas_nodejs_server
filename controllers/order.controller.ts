@@ -120,15 +120,15 @@ export const createOrderByCoupon = CatchAsyncError(
 
       const user = await userModel.findById(req.user?._id);
 
-      // const courseExistInUser = user?.courses.some(
-      //   (course: any) => course._id.toString() === courseId
-      // );
+      const courseExistInUser = user?.courses.some(
+        (course: any) => course._id.toString() === courseId
+      );
 
-      // if (courseExistInUser) {
-      //   return next(
-      //     new ErrorHandler("You have already purchased this course", 400)
-      //   );
-      // }
+      if (courseExistInUser) {
+        return next(
+          new ErrorHandler("You have already purchased this course", 400)
+        );
+      }
 
       const course:ICourse | null = await CourseModel.findById(courseId)
 
@@ -142,26 +142,24 @@ export const createOrderByCoupon = CatchAsyncError(
         return next(new ErrorHandler("coupon not found", 404));
       }
       
-      if(!coupon.includes(courseId)){
-        
-        res.status(201).json({
-          success:true,
-          // courseId,
-          // course,
-          // user,
-          coupon
-      })
-
-      }else{
+      if(!coupon[0].courseId.includes(courseId)){
         return next(new ErrorHandler("This coupon is not for this course", 404));
       }
+
       
-      // user?.courses.push(course?._id);
-
+      user?.courses.push(course?._id);
+      
       // await redis.set(req.user?._id, JSON.stringify(user));
-
-      // await user?.save();
-
+      
+      await user?.save();
+      
+      res.status(201).json({
+        success:true,
+        // courseId,
+        // course,
+        // user,
+        message : "You successfully enroll this course!"
+    })
     } catch(error: any) {
       return next(new ErrorHandler(error.message, 500));
     }

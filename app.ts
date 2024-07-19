@@ -13,6 +13,7 @@ import layoutRouter from "./routes/layout.route";
 import { rateLimit } from 'express-rate-limit'
 import CouponCodeModel from "./models/coupon.models";
 import { couponRouter } from "./routes/coupon.router";
+import { maintenanceRouter } from "./routes/maintenance.route";
 
 // body parser
 app.use(express.json({ limit: "50mb" }));
@@ -23,7 +24,7 @@ app.use(cookieParser());
 // cors => cross origin resource sharing
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://zernxcmwig.ap-south-1.awsapprunner.com" ],
+    origin: ["http://localhost:3000", "https://zernxcmwig.ap-south-1.awsapprunner.com", "http://127.0.0.1:3000" ],
     credentials: true,
   })
 );
@@ -45,7 +46,8 @@ app.use(
   notificationRouter,
   analyticsRouter,
   layoutRouter,
-  couponRouter
+  couponRouter,
+  maintenanceRouter
 );
 
 // testing api

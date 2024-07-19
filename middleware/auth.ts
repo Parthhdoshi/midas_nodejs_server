@@ -7,7 +7,7 @@ import { updateAccessToken } from "../controllers/user.controller";
 import userModel from "../models/user.model";
 
 // authenticated user
-export const isAutheticated = CatchAsyncError(
+export const isAuthenticated = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     const access_token = req.cookies.access_token as string;
     console.log(access_token)

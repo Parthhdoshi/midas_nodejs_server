@@ -7,6 +7,7 @@ export interface ICouponSchema extends Document{
    userId: ObjectId;
    courseId : ObjectId;
    discount:number;
+   maxCount:number;
 }
 
 const couponSchema = new Schema<ICouponSchema>({
@@ -34,6 +35,11 @@ const couponSchema = new Schema<ICouponSchema>({
         required: true,
       }],
       discount:{
+        type: Number,
+        required: true,
+        default: 0
+      },
+      maxCount:{
         type: Number,
         required: true,
         default: 0
