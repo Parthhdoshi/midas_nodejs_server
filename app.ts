@@ -14,6 +14,8 @@ import { rateLimit } from 'express-rate-limit'
 import CouponCodeModel from "./models/coupon.models";
 import { couponRouter } from "./routes/coupon.router";
 import { maintenanceRouter } from "./routes/maintenance.route";
+import certificateRouter from "./routes/certificatePdf.router";
+
 
 // body parser
 app.use(express.json({ limit: "50mb" }));
@@ -47,7 +49,8 @@ app.use(
   analyticsRouter,
   layoutRouter,
   couponRouter,
-  maintenanceRouter
+  maintenanceRouter,
+  certificateRouter,
 );
 
 // testing api
@@ -55,13 +58,6 @@ app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
     success: true,
     message: "GET API is working",
-  });
-});
-
-app.post("/test", async (req: Request, res: Response, next: NextFunction) => {
-  res.status(200).json({
-    success: true,
-    message: "POST API is working",
   });
 });
 
